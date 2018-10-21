@@ -1,6 +1,5 @@
 package com.sap.itemservice.controller;
 
-import com.sap.itemservice.ItemServiceApplication;
 import com.sap.itemservice.model.ItemObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 
 @RestController
 public class ItemController {
+    private Map<Long, ItemObject> itemMap = new ConcurrentSkipListMap<>();
 
     @GetMapping("/items")
     public List<ItemObject> getItems() {
         Long lastTwoSeconds = System.currentTimeMillis() - 2000;
-        List<ItemObject> inLastTwoSeconds = ItemServiceApplication.itemMap
-                .entrySet()
+        List<ItemObject> inLastTwoSeconds = itemMap.entrySet()
                 .stream()
                 .filter(o -> o.getKey() >= lastTwoSeconds)
                 .map(Map.Entry::getValue)
@@ -29,8 +29,7 @@ public class ItemController {
         if (inLastTwoSeconds.size() > 100) {
             return inLastTwoSeconds;
         }
-        return ItemServiceApplication.itemMap
-                .entrySet()
+        return itemMap.entrySet()
                 .stream()
                 .limit(100)
                 .map(Map.Entry::getValue)
@@ -39,7 +38,7 @@ public class ItemController {
 
     @PostMapping("/items")
     public ResponseEntity createItem(@Valid @RequestBody ItemObject itemObject) {
-        ItemServiceApplication.itemMap.put(System.currentTimeMillis(), itemObject);
+        itemMap.put(System.currentTimeMillis(), itemObject);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 }
