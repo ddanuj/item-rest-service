@@ -14,3 +14,11 @@ Java REST service that gets and posts item objects.
     - Use G1 garbage collector - `-XX:+UseG1GC`
     - Set appropriate upper limit to memory say 100 MB - `-Xmx100m`
     - Set appropriate step size to allocate more memory in case of increased load - `-Xms25m -XX:NewRatio=2`
+
+## Load testing
+Load testing for this service was done using [Gatling](https://gatling.io/). The simulation is included above as **LoadTestingSimulation.scala**. The results of the simulation are as follows:
+- Request count: 40000
+- Latency – Mean response time: 5 ms
+- Throughput – Mean requests per second: 357.143
+
+For all the important design choices made during the development of this service (including detailed report of the load test) are included in report **Item Rest Service Report.pdf**. I highly reccommend reading it!
