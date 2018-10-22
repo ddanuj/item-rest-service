@@ -5,7 +5,7 @@ import javax.validation.constraints.Positive;
 import java.io.Serializable;
 
 public class ItemObject implements Serializable {
-    static class Item implements Serializable {
+    public static class Item implements Serializable {
         @Positive
         private Long id;
 
