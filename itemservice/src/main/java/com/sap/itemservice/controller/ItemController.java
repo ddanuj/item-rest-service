@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 public class ItemController {
-    private Map<Long, ItemObject> itemMap = new ConcurrentSkipListMap<>();
+    private ConcurrentSkipListMap<Long, ItemObject> itemMap = new ConcurrentSkipListMap<>();
     private int counter = 0;
 
     @GetMapping("/items")
@@ -29,19 +29,16 @@ public class ItemController {
                 .collect(Collectors.toList());
         if (inLastTwoSeconds.size() > 100) {
             counter++;
-            if (counter > 5){
-                System.out.println("Before: " + itemMap.entrySet().size());
+            if (counter > 10) {
                 itemMap.entrySet()
                         .stream()
                         .filter(o -> o.getKey() < lastTwoSeconds)
                         .forEach(o -> itemMap.remove(o.getKey()));
-                System.out.println("After: " + itemMap.entrySet().size());
                 counter = 0;
             }
             return inLastTwoSeconds;
         }
-        System.out.println("Returning last 100 records ...");
-        return itemMap.entrySet()
+        return itemMap.descendingMap().entrySet()
                 .stream()
                 .limit(100)
                 .map(Map.Entry::getValue)
